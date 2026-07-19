@@ -1,18 +1,23 @@
 # CloudPanel MCP Server
 
+<div align="center">
+
 **50 tools** to manage your CloudPanel VPS through any AI — Claude, Cursor, OpenCode, Gemini CLI, Kiro, Windsurf, Cline, and more.
 
-```
-npx cloudpanel-mcp install
-```
+[![npm](https://img.shields.io/npm/v/cloudpanel-mcp?color=blue&logo=npm)](https://www.npmjs.com/package/cloudpanel-mcp)
+[![Docker Hub](https://img.shields.io/docker/v/heyyjish/cloudpanel-mcp?color=blue&logo=docker)](https://hub.docker.com/r/heyyjish/cloudpanel-mcp)
+[![PyPI](https://img.shields.io/pypi/v/cloudpanel-mcp?color=blue&logo=pypi)](https://pypi.org/project/cloudpanel-mcp/)
+[![GitHub](https://img.shields.io/github/stars/heyjishh/cloudpanel-mcp?logo=github)](https://github.com/heyjishh/cloudpanel-mcp)
 
-Then restart your AI and ask: *"list my cloudpanel sites"* or *"deploy my app"*.
+</div>
 
 ## Quick Start
 
 ```bash
-# 1. Install & configure for your AI tools
-npx cloudpanel-mcp install
+# 1. Install & configure for your AI tools (pick one):
+npx cloudpanel-mcp install           # npm
+docker run --rm heyyjish/cloudpanel-mcp:latest install   # Docker
+pip install cloudpanel-mcp && cloudpanel-mcp install     # Python
 
 # 2. Connect to your server (pick one):
 #    SSH key:   ssh-copy-id root@your-server.com
@@ -47,12 +52,47 @@ Scans your machine and configures every AI tool it finds.
 
 ### Manual per platform
 
+#### npm
 ```json
 {
   "mcpServers": {
     "cloudpanel": {
       "command": "npx",
       "args": ["-y", "cloudpanel-mcp"],
+      "env": {
+        "CP_USER": "root",
+        "CP_SSH_KEY": "/home/you/.ssh/id_ed25519",
+        "CP_HOST": "your-server.com"
+      }
+    }
+  }
+}
+```
+
+#### Docker
+```json
+{
+  "mcpServers": {
+    "cloudpanel": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "/home/you/.ssh:/root/.ssh", "-e", "CP_HOST", "-e", "CP_USER", "-e", "CP_SSH_KEY", "heyyjish/cloudpanel-mcp:latest"],
+      "env": {
+        "CP_USER": "root",
+        "CP_SSH_KEY": "/home/you/.ssh/id_ed25519",
+        "CP_HOST": "your-server.com"
+      }
+    }
+  }
+}
+```
+
+#### pip
+```json
+{
+  "mcpServers": {
+    "cloudpanel": {
+      "command": "cloudpanel-mcp",
+      "args": [],
       "env": {
         "CP_USER": "root",
         "CP_SSH_KEY": "/home/you/.ssh/id_ed25519",
@@ -84,13 +124,41 @@ Scans your machine and configures every AI tool it finds.
 | `CP_PASSWORD` | — | SSH password (used when no key set) |
 | `CP_SSH_PORT` | `22` | SSH port |
 
+## Install Methods
+
+### npm (recommended)
+```bash
+npx cloudpanel-mcp install
+# or install globally:
+npm install -g cloudpanel-mcp && cloudpanel-mcp install
+```
+
+### Docker
+```bash
+docker run --rm -v ~/.ssh:/root/.ssh heyyjish/cloudpanel-mcp:latest install
+# Run as MCP server (for MCP configs that support Docker):
+docker run --rm -i -v ~/.ssh:/root/.ssh \
+  -e CP_HOST=your-server.com \
+  heyyjish/cloudpanel-mcp:latest
+```
+
+### pip / uv
+```bash
+pip install cloudpanel-mcp && cloudpanel-mcp install
+# or with uv:
+uv tool install cloudpanel-mcp && cloudpanel-mcp install
+```
+
 ## Architecture
 
 ```
-src/
-├── index.ts      # MCP server — 48 tools registered
-├── cli.ts        # CLI entry — install, help, serve
-└── ssh.ts        # Persistent SSH client with auto-reconnect
+├── src/
+│   ├── index.ts      # MCP server — 50 tools registered
+│   ├── cli.ts        # CLI entry — install, help, serve
+│   └── ssh.ts        # Persistent SSH client with auto-reconnect
+├── python/           # Python CLI wrapper (pip/uv)
+├── Dockerfile        # Docker image
+└── build/            # Compiled output
 ```
 
 The server establishes a single persistent SSH connection with keepalive and auto-reconnect.

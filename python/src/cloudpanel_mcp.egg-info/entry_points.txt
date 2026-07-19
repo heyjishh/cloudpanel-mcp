@@ -1,0 +1,2 @@
+[console_scripts]
+cloudpanel-mcp = cloudpanel_mcp.cli:main
