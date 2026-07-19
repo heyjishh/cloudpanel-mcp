@@ -1,6 +1,6 @@
 {
   "name": "cloudpanel-mcp",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "MCP server for CloudPanel — manage sites, databases, SSL, Docker, and deploy apps via AI. Works with Claude, Cursor, OpenCode, Gemini CLI, Kiro, and any MCP client.",
   "type": "module",
   "main": "build/index.js",
