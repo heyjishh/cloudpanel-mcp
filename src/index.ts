@@ -706,6 +706,29 @@ server.tool(
   }
 );
 
+server.tool(
+  "docker_login",
+  "Log into a Docker registry on the server",
+  {
+    registry: z.string().default("https://index.docker.io/v1/").describe("Docker registry URL"),
+    username: z.string().describe("Registry username"),
+    password: z.string().describe("Registry password or access token"),
+    dryRun: z.boolean().default(false).describe("Preview what would be done"),
+  },
+  async ({ registry, username, password, dryRun }) => {
+    try {
+      await ensureDocker();
+      if (dryRun) {
+        return { content: [{ type: "text", text: `Would run: echo "${password}" | docker login ${registry} --username "${username}" --password-stdin` }] };
+      }
+      const result = await ssh.exec(`echo "${password}" | docker login ${registry} --username "${username}" --password-stdin 2>&1`);
+      return { content: [{ type: "text", text: result.stdout || result.stderr || `Logged into ${registry}` }] };
+    } catch (e: any) {
+      return { content: [{ type: "text", text: `Error: ${e.message}` }], isError: true };
+    }
+  }
+);
+
 // ──────────────────────────────────────────────
 //  Server Install Tools
 // ──────────────────────────────────────────────

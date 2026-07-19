@@ -301,19 +301,25 @@ PLATFORMS
   OpenCode · Claude Desktop · Cursor · Windsurf
   Cline · Gemini CLI · Kiro · Continue (VS Code)
 
-48 TOOLS
+50 TOOLS
   cloudpanel_*  (26)  Sites · SSL · Databases · System · Users · Backups
-  docker_*      (9)   Containers · Compose · Logs · Exec · Images · Prune
+  docker_*      (10)  Containers · Compose · Logs · Exec · Images · Login · Prune
   server_*      (8)   Install Docker/Postgres/Node/Nginx/Certbot/Redis/MySQL
   deploy        (1)   deploy_project — one-shot deploy with method=docker|cloudpanel
   server_*      (3)   Firewall status · Allow port · DNS check
   raw           (1)   cloudpanel_raw_command — escape hatch
+
+AUTH
+  SSH key (default):     Set CP_SSH_KEY=/path/to/key
+  Username + password:   Set CP_USER=root CP_PASSWORD=yourpass
+  Docker registry:       Use docker_login tool with username+token
 
 EXAMPLES
   Deploy a site:     cloudpanel_create_python_site domainName=app.mysite.com pythonVersion=3.12
   Check server:      server_software_status detailed=true
   Install Docker:    server_install_docker dryRun=true
   Deploy stack:      deploy_project method=docker autoSsl=true
+  Docker login:      docker_login username=myuser password=mytoken
 `);
 }
 

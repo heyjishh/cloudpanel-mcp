@@ -1,6 +1,6 @@
 # CloudPanel MCP Server
 
-**48 tools** to manage your CloudPanel VPS through any AI — Claude, Cursor, OpenCode, Gemini CLI, Kiro, Windsurf, Cline, and more.
+**50 tools** to manage your CloudPanel VPS through any AI — Claude, Cursor, OpenCode, Gemini CLI, Kiro, Windsurf, Cline, and more.
 
 ```
 npx cloudpanel-mcp install
@@ -14,8 +14,9 @@ Then restart your AI and ask: *"list my cloudpanel sites"* or *"deploy my app"*.
 # 1. Install & configure for your AI tools
 npx cloudpanel-mcp install
 
-# 2. Copy your SSH key to the server
-ssh-copy-id root@your-server.com
+# 2. Connect to your server (pick one):
+#    SSH key:   ssh-copy-id root@your-server.com
+#    Password:  Set CP_PASSWORD env var
 
 # 3. Start using it
 #    "Check what's installed on my server"
@@ -23,12 +24,12 @@ ssh-copy-id root@your-server.com
 #    "Install Docker and deploy my app"
 ```
 
-## 48 Tools
+## 50 Tools
 
 | Category | Tools | What you can do |
 |---|---|---|
 | **CloudPanel** (26) | `cloudpanel_list_sites`, `cloudpanel_create_php_site`, `cloudpanel_create_nodejs_site`, `cloudpanel_create_python_site`, `cloudpanel_create_reverse_proxy_site`, `cloudpanel_create_static_site`, `cloudpanel_delete_site`, `cloudpanel_install_ssl`, `cloudpanel_list_ssl_certificates`, `cloudpanel_create_mysql_database`, `cloudpanel_create_mysql_user`, `cloudpanel_delete_mysql_database`, `cloudpanel_delete_mysql_user`, `cloudpanel_create_postgresql_database`, `cloudpanel_export_database`, `cloudpanel_import_database`, `cloudpanel_system_info`, `cloudpanel_system_update`, `cloudpanel_list_users`, `cloudpanel_create_user`, `cloudpanel_delete_user`, `cloudpanel_enable_2fa`, `cloudpanel_disable_2fa`, `cloudpanel_create_backup`, `cloudpanel_list_backups`, `cloudpanel_delete_backup` | Sites · SSL · Databases · System · Users · Backups |
-| **Docker** (9) | `docker_list_containers`, `docker_deploy_compose`, `docker_container_logs`, `docker_stop_container`, `docker_restart_container`, `docker_list_images`, `docker_prune`, `docker_exec`, `docker_load_image` | Full Docker management |
+| **Docker** (10) | `docker_list_containers`, `docker_deploy_compose`, `docker_container_logs`, `docker_stop_container`, `docker_restart_container`, `docker_list_images`, `docker_prune`, `docker_exec`, `docker_load_image`, `docker_login` | Full Docker management · Registry login |
 | **Server Install** (8) | `server_install_docker`, `server_install_postgresql`, `server_install_nodejs`, `server_install_nginx`, `server_install_certbot`, `server_install_redis`, `server_install_mysql`, `server_software_status` | One-shot installs with `dryRun`, `method`, `version` flags |
 | **Firewall & DNS** (3) | `server_firewall_status`, `server_firewall_allow_port`, `server_dns_check` | Security · Networking |
 | **Deploy** (1) | `deploy_project` | One-shot full stack deploy with `method` flag: `docker`, `cloudpanel-reverse-proxy`, `cloudpanel-nodejs` |
@@ -79,8 +80,8 @@ Scans your machine and configures every AI tool it finds.
 |---|---|---|
 | `CP_HOST` | `your-server.com` | Server hostname or IP |
 | `CP_USER` | `root` | SSH user |
-| `CP_SSH_KEY` | `~/.ssh/id_ed25519` | SSH private key path |
-| `CP_PASSWORD` | — | SSH password (fallback) |
+| `CP_SSH_KEY` | `~/.ssh/id_ed25519` | SSH private key (omit for password auth) |
+| `CP_PASSWORD` | — | SSH password (used when no key set) |
 | `CP_SSH_PORT` | `22` | SSH port |
 
 ## Architecture
