@@ -283,6 +283,127 @@ const PLATFORMS: PlatformConfig[] = [
     mergeKey: "mcpServers",
     isNested: false,
   },
+  {
+    name: "Roo Code",
+    detect: () => [path.join(os.homedir(), ".config", "roo-code", "mcp_settings.json"), path.join(process.cwd(), ".roo", "mcp.json")].some(p => fs.existsSync(p)),
+    configPath: () => {
+      const local = path.join(process.cwd(), ".roo", "mcp.json");
+      return fs.existsSync(local) ? local : path.join(os.homedir(), ".config", "roo-code", "mcp_settings.json");
+    },
+    readConfig: () => {
+      for (const p of [path.join(process.cwd(), ".roo", "mcp.json"), path.join(os.homedir(), ".config", "roo-code", "mcp_settings.json")]) {
+        if (fs.existsSync(p)) try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch {}
+      }
+      return {};
+    },
+    writeConfig: (cfg) => {
+      const p = path.join(os.homedir(), ".config", "roo-code", "mcp_settings.json");
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+    },
+    mergeKey: "mcpServers",
+    isNested: false,
+  },
+  {
+    name: "Aider",
+    detect: () => [path.join(os.homedir(), ".aider.mcp.json"), path.join(process.cwd(), ".aider.mcp.json")].some(p => fs.existsSync(p)),
+    configPath: () => {
+      const local = path.join(process.cwd(), ".aider.mcp.json");
+      return fs.existsSync(local) ? local : path.join(os.homedir(), ".aider.mcp.json");
+    },
+    readConfig: () => {
+      for (const p of [path.join(process.cwd(), ".aider.mcp.json"), path.join(os.homedir(), ".aider.mcp.json")]) {
+        if (fs.existsSync(p)) try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch {}
+      }
+      return {};
+    },
+    writeConfig: (cfg) => {
+      const p = path.join(os.homedir(), ".aider.mcp.json");
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+    },
+    mergeKey: "mcpServers",
+    isNested: false,
+  },
+  {
+    name: "Cherry Studio",
+    detect: () => {
+      const paths = [
+        path.join(os.homedir(), ".config", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "AppData", "Roaming", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "Library", "Application Support", "cherry-studio", "mcp.json"),
+      ];
+      return paths.some(p => fs.existsSync(p));
+    },
+    configPath: () => {
+      const paths = [
+        path.join(os.homedir(), ".config", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "AppData", "Roaming", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "Library", "Application Support", "cherry-studio", "mcp.json"),
+      ];
+      return paths.find(p => fs.existsSync(p)) || paths[0];
+    },
+    readConfig: () => {
+      const paths = [
+        path.join(os.homedir(), ".config", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "AppData", "Roaming", "cherry-studio", "mcp.json"),
+        path.join(os.homedir(), "Library", "Application Support", "cherry-studio", "mcp.json"),
+      ];
+      for (const p of paths) { if (fs.existsSync(p)) try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch {} }
+      return {};
+    },
+    writeConfig: (cfg) => {
+      const p = path.join(os.homedir(), ".config", "cherry-studio", "mcp.json");
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+    },
+    mergeKey: "mcpServers",
+    isNested: false,
+  },
+  {
+    name: "Enchanted (macOS)",
+    detect: () => fs.existsSync(path.join(os.homedir(), "Library", "Application Support", "com.enchant.MCP", "config.json")),
+    configPath: () => path.join(os.homedir(), "Library", "Application Support", "com.enchant.MCP", "config.json"),
+    readConfig: () => {
+      const p = path.join(os.homedir(), "Library", "Application Support", "com.enchant.MCP", "config.json");
+      if (!fs.existsSync(p)) return {};
+      try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch { return {}; }
+    },
+    writeConfig: (cfg) => {
+      const p = path.join(os.homedir(), "Library", "Application Support", "com.enchant.MCP", "config.json");
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+    },
+    mergeKey: "mcpServers",
+    isNested: false,
+  },
+  {
+    name: "JetBrains MCP",
+    detect: () => {
+      const paths = [
+        path.join(process.cwd(), ".idea", "mcp.json"),
+        path.join(os.homedir(), ".config", "JetBrains", "mcp.json"),
+      ];
+      return paths.some(p => fs.existsSync(p));
+    },
+    configPath: () => {
+      const local = path.join(process.cwd(), ".idea", "mcp.json");
+      return fs.existsSync(local) ? local : path.join(os.homedir(), ".config", "JetBrains", "mcp.json");
+    },
+    readConfig: () => {
+      for (const p of [path.join(process.cwd(), ".idea", "mcp.json"), path.join(os.homedir(), ".config", "JetBrains", "mcp.json")]) {
+        if (fs.existsSync(p)) try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch {}
+      }
+      return {};
+    },
+    writeConfig: (cfg) => {
+      const p = path.join(os.homedir(), ".config", "JetBrains", "mcp.json");
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+    },
+    mergeKey: "mcpServers",
+    isNested: false,
+  },
 ];
 
 function cmdInstall(args: string[]) {
@@ -370,9 +491,10 @@ ENV VARIABLES
   CP_SSH_PORT   SSH port               (default: 22)
 
 PLATFORMS
-  OpenCode · Claude Desktop · Cursor · Windsurf
-  Cline · Gemini CLI · Kiro · Continue (VS Code)
-  Claude Code · VS Code MCP · Codex CLI
+  OpenCode · Claude Desktop · Claude Code · Cursor
+  Windsurf · Cline · Gemini CLI · Kiro · Continue
+  VS Code MCP · Codex CLI · Roo Code · Aider
+  Cherry Studio · Enchanted · JetBrains MCP · Copilot
 
 50 TOOLS
   cloudpanel_*  (26)  Sites · SSL · Databases · System · Users · Backups

@@ -119,6 +119,11 @@ Scans your machine and configures every AI tool it finds.
 | **Continue (VS Code)** | `~/.continue/config.json` | global |
 | **VS Code MCP** | `.vscode/mcp.json` | local |
 | **Codex CLI** | `~/.codex/config.json` | global |
+| **Roo Code** | `~/.config/roo-code/mcp_settings.json` or `.roo/mcp.json` | both |
+| **Aider** | `~/.aider.mcp.json` or `.aider.mcp.json` | both |
+| **Cherry Studio** | `~/.config/cherry-studio/mcp.json` | global |
+| **Enchanted (macOS)** | `~/Library/Application Support/com.enchant.MCP/config.json` | global |
+| **JetBrains MCP** | `.idea/mcp.json` or `~/.config/JetBrains/mcp.json` | both |
 
 ## Environment Variables
 
