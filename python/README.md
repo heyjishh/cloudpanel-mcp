@@ -1,15 +1,3 @@
-Metadata-Version: 2.4
-Name: cloudpanel-mcp
-Version: 2.1.0
-Summary: Python wrapper for CloudPanel MCP server — manage sites, databases, SSL, Docker, and deploy apps via AI
-Author: heyjishh
-License: MIT
-Project-URL: Homepage, https://github.com/heyjishh/cloudpanel-mcp#readme
-Project-URL: Repository, https://github.com/heyjishh/cloudpanel-mcp.git
-Project-URL: Issues, https://github.com/heyjishh/cloudpanel-mcp/issues
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-
 # cloudpanel-mcp
 
 Python CLI wrapper for the [CloudPanel MCP](https://github.com/heyjishh/cloudpanel-mcp) server.

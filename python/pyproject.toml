@@ -7,9 +7,10 @@ name = "cloudpanel-mcp"
 version = "2.1.0"
 description = "Python wrapper for CloudPanel MCP server — manage sites, databases, SSL, Docker, and deploy apps via AI"
 authors = [{ name = "heyjishh" }]
-license = "MIT"
+license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = []
+readme = "README.md"
 
 [project.urls]
 Homepage = "https://github.com/heyjishh/cloudpanel-mcp#readme"
