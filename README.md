@@ -31,7 +31,7 @@ ssh-copy-id root@your-server.com
 | **Docker** (9) | `docker_list_containers`, `docker_deploy_compose`, `docker_container_logs`, `docker_stop_container`, `docker_restart_container`, `docker_list_images`, `docker_prune`, `docker_exec`, `docker_load_image` | Full Docker management |
 | **Server Install** (8) | `server_install_docker`, `server_install_postgresql`, `server_install_nodejs`, `server_install_nginx`, `server_install_certbot`, `server_install_redis`, `server_install_mysql`, `server_software_status` | One-shot installs with `dryRun`, `method`, `version` flags |
 | **Firewall & DNS** (3) | `server_firewall_status`, `server_firewall_allow_port`, `server_dns_check` | Security · Networking |
-| **Deploy** (1) | `deploy_autoforge` | One-shot full stack deploy with `method` flag: `docker`, `cloudpanel-reverse-proxy`, `cloudpanel-nodejs` |
+| **Deploy** (1) | `deploy_project` | One-shot full stack deploy with `method` flag: `docker`, `cloudpanel-reverse-proxy`, `cloudpanel-nodejs` |
 | **Escape Hatch** (1) | `cloudpanel_raw_command` | Run any shell command |
 
 ## Installation
@@ -101,13 +101,13 @@ No per-command connection overhead.
 
 ```bash
 # Deploy with Docker (auto-installs Docker if missing)
-deploy_autoforge method=docker autoSsl=true frontendDomain=mysite.com
+deploy_project method=docker autoSsl=true frontendDomain=mysite.com
 
 # Deploy behind CloudPanel reverse proxy
-deploy_autoforge method=cloudpanel-reverse-proxy autoSsl=true
+deploy_project method=cloudpanel-reverse-proxy autoSsl=true
 
 # Deploy as CloudPanel-managed Node.js app
-deploy_autoforge method=cloudpanel-nodejs
+deploy_project method=cloudpanel-nodejs
 ```
 
 ### Install prerequisites first

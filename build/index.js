@@ -11,7 +11,7 @@ function getConfig() {
         privateKey = fs.readFileSync(keyPath, "utf-8");
     }
     return {
-        host: process.env.CP_HOST || "50.6.242.225",
+        host: process.env.CP_HOST || "your-server.com",
         port: parseInt(process.env.CP_SSH_PORT || "22"),
         username: process.env.CP_USER || "root",
         privateKey,
@@ -436,7 +436,7 @@ server.tool("docker_list_containers", "List running Docker containers", {
 server.tool("docker_deploy_compose", "Deploy a docker-compose.yml file on the server", {
     composeContent: z.string().describe("The docker-compose.yml content as a string"),
     projectName: z.string().describe("Docker compose project name"),
-    remoteDir: z.string().default("/root/autoforge").describe("Remote directory"),
+    remoteDir: z.string().default("/root/project").describe("Remote directory"),
 }, async ({ composeContent, projectName, remoteDir }) => {
     try {
         await ensureDocker();
@@ -775,7 +775,7 @@ server.tool("server_install_mysql", "Install MySQL server on the server.", {
         results.push(`   - Run mysql_secure_installation`);
         return { content: [{ type: "text", text: results.join("\n") }] };
     }
-    const pass = rootPassword || `autoforge_$(openssl rand -hex 8)`;
+    const pass = rootPassword || `project_$(openssl rand -hex 8)`;
     const { stdout } = await ssh.exec(`
       DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mysql-server-${version} 2>&1 | tail -3
       systemctl enable mysql && systemctl start mysql
@@ -788,16 +788,16 @@ server.tool("server_install_mysql", "Install MySQL server on the server.", {
     return { content: [{ type: "text", text: results.join("\n") }] };
 });
 // ──────────────────────────────────────────────
-//  Deploy — AutoForge
+//  Deploy — Project
 // ──────────────────────────────────────────────
-server.tool("deploy_autoforge", "Deploy the AutoForge project (autoaveriq.ca) to the server. Choose deployment method: docker (full stack with Postgres), cloudpanel-reverse-proxy (Docker apps behind CloudPanel proxy), or cloudpanel-nodejs (CloudPanel-managed Node.js site). Installs prerequisites automatically. Shows live progress.", {
+server.tool("deploy_project", "Deploy a full-stack project to the server. Choose deployment method: docker (full stack with Postgres), cloudpanel-reverse-proxy (Docker apps behind CloudPanel proxy), or cloudpanel-nodejs (CloudPanel-managed Node.js site). Installs prerequisites automatically. Shows live progress.", {
     method: z.enum(["docker", "cloudpanel-reverse-proxy", "cloudpanel-nodejs"]).default("docker")
         .describe("docker = full compose with Postgres; cloudpanel-reverse-proxy = Docker behind CloudPanel proxy; cloudpanel-nodejs = CloudPanel-hosted Node.js app"),
-    frontendDomain: z.string().default("autoaveriq.ca").describe("Frontend domain"),
-    backendDomain: z.string().default("api.dealers.autoaveriq.ca").describe("Backend API domain"),
+    frontendDomain: z.string().default("example.com").describe("Frontend domain"),
+    backendDomain: z.string().default("api.example.com").describe("Backend API domain"),
     secretKey: z.string().default("change-me-in-production").describe("Production SECRET_KEY (min 32 chars)"),
-    databaseUrl: z.string().default("postgresql://dealer_user:dealer_pass@localhost:5432/ai_auto_dealership").describe("PostgreSQL DATABASE_URL"),
-    dbPassword: z.string().default("dealer_pass").describe("PostgreSQL password for Docker Postgres"),
+    databaseUrl: z.string().default("postgresql://app_user:app_pass@localhost:5432/app_db").describe("PostgreSQL DATABASE_URL"),
+    dbPassword: z.string().default("app_pass").describe("PostgreSQL password for Docker Postgres"),
     autoSsl: z.boolean().default(true).describe("Install Let's Encrypt SSL after deployment"),
     runMigrations: z.boolean().default(true).describe("Run alembic migrations after deploy"),
     skipBackup: z.boolean().default(false).describe("Skip pre-deploy backup if one exists"),
@@ -842,9 +842,9 @@ server.tool("deploy_autoforge", "Deploy the AutoForge project (autoaveriq.ca) to
         if (!skipBackup) {
             step("Pre-deploy backup (if existing deploy)");
             const { stdout: backupOut } = await ssh.exec(`
-          if [ -d /root/autoforge ]; then
+          if [ -d /root/project ]; then
             mkdir -p /root/backups
-            tar czf "/root/backups/autoforge-predeploy-$(date +%Y%m%d-%H%M%S).tar.gz" -C /root autoforge 2>/dev/null && echo "Backup created" || echo "No previous deploy to backup"
+            tar czf "/root/backups/project-predeploy-$(date +%Y%m%d-%H%M%S).tar.gz" -C /root project 2>/dev/null && echo "Backup created" || echo "No previous deploy to backup"
           else
             echo "Fresh deploy (no backup needed)"
           fi
@@ -857,18 +857,18 @@ server.tool("deploy_autoforge", "Deploy the AutoForge project (autoaveriq.ca) to
             const compose = `services:
   frontend:
     image: nginx:alpine
-    container_name: autoforge_frontend
+    container_name: project_frontend
     restart: unless-stopped
     ports:
       - "${startPort}:80"
     volumes:
       - frontend_build:/usr/share/nginx/html:ro
     networks:
-      - autoforge_network
+      - project_network
 
   backend:
-    image: autoforge-backend:latest
-    container_name: autoforge_backend
+    image: project-backend:latest
+    container_name: project_backend
     restart: unless-stopped
     ports:
       - "${backendPort}:8000"
@@ -885,15 +885,15 @@ server.tool("deploy_autoforge", "Deploy the AutoForge project (autoaveriq.ca) to
       db:
         condition: service_healthy
     networks:
-      - autoforge_network
+      - project_network
 
   db:
     image: postgres:16-alpine
-    container_name: autoforge_db
+    container_name: project_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ai_auto_dealership
-      POSTGRES_USER: dealer_user
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app_user
       POSTGRES_PASSWORD: ${dbPassword}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -903,7 +903,7 @@ server.tool("deploy_autoforge", "Deploy the AutoForge project (autoaveriq.ca) to
       timeout: 5s
       retries: 5
     networks:
-      - autoforge_network
+      - project_network
 
 volumes:
   postgres_data:
@@ -911,14 +911,14 @@ volumes:
   frontend_build:
 
 networks:
-  autoforge_network:
+  project_network:
     driver: bridge`;
-            await ssh.exec("mkdir -p /root/autoforge");
-            await ssh.exec(`cat > /root/autoforge/docker-compose.yml << 'DOCKEREOF'\n${compose}\nDOCKEREOF`);
+            await ssh.exec("mkdir -p /root/project");
+            await ssh.exec(`cat > /root/project/docker-compose.yml << 'DOCKEREOF'\n${compose}\nDOCKEREOF`);
             results.push("   docker-compose.yml written");
-            const { stdout: upOut } = await ssh.exec("cd /root/autoforge && docker compose pull && docker compose up -d 2>&1");
+            const { stdout: upOut } = await ssh.exec("cd /root/project && docker compose pull && docker compose up -d 2>&1");
             results.push(`   ${upOut.trim().split('\n').join('\n   ')}`);
-            const { stdout: psOut } = await ssh.exec("cd /root/autoforge && docker compose ps --format 'table {{.Name}}\t{{.Status}}\t{{.Ports}}' 2>&1");
+            const { stdout: psOut } = await ssh.exec("cd /root/project && docker compose ps --format 'table {{.Name}}\t{{.Status}}\t{{.Ports}}' 2>&1");
             results.push(`\n   Containers:\n   ${psOut.trim().split('\n').join('\n   ')}`);
         }
         else if (method === "cloudpanel-reverse-proxy") {
@@ -937,18 +937,18 @@ networks:
             const compose = `services:
   frontend:
     image: nginx:alpine
-    container_name: autoforge_frontend
+    container_name: project_frontend
     restart: unless-stopped
     ports:
       - "127.0.0.1:${startPort}:80"
     volumes:
       - frontend_build:/usr/share/nginx/html:ro
     networks:
-      - autoforge_network
+      - project_network
 
   backend:
-    image: autoforge-backend:latest
-    container_name: autoforge_backend
+    image: project-backend:latest
+    container_name: project_backend
     restart: unless-stopped
     ports:
       - "127.0.0.1:${backendPort}:8000"
@@ -965,15 +965,15 @@ networks:
       db:
         condition: service_healthy
     networks:
-      - autoforge_network
+      - project_network
 
   db:
     image: postgres:16-alpine
-    container_name: autoforge_db
+    container_name: project_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ai_auto_dealership
-      POSTGRES_USER: dealer_user
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app_user
       POSTGRES_PASSWORD: ${dbPassword}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -983,7 +983,7 @@ networks:
       timeout: 5s
       retries: 5
     networks:
-      - autoforge_network
+      - project_network
 
 volumes:
   postgres_data:
@@ -991,11 +991,11 @@ volumes:
   frontend_build:
 
 networks:
-  autoforge_network:
+  project_network:
     driver: bridge`;
-            await ssh.exec("mkdir -p /root/autoforge");
-            await ssh.exec(`cat > /root/autoforge/docker-compose.yml << 'DOCKEREOF'\n${compose}\nDOCKEREOF`);
-            const { stdout: upOut } = await ssh.exec("cd /root/autoforge && docker compose pull && docker compose up -d 2>&1");
+            await ssh.exec("mkdir -p /root/project");
+            await ssh.exec(`cat > /root/project/docker-compose.yml << 'DOCKEREOF'\n${compose}\nDOCKEREOF`);
+            const { stdout: upOut } = await ssh.exec("cd /root/project && docker compose pull && docker compose up -d 2>&1");
             results.push(`   ${upOut.trim().split('\n').join('\n   ')}`);
         }
         else if (method === "cloudpanel-nodejs") {
@@ -1012,9 +1012,9 @@ networks:
             results.push(`   Backend: ${beSite.trim().split('\n').join(', ')}`);
             step("Cloning and building apps (simulated — swap with your Git URLs)");
             const cloneApps = `
-          mkdir -p /home/autoforge
-          [ -d /home/autoforge/frontend ] || echo "Place frontend code in /home/autoforge/frontend"
-          [ -d /home/autoforge/backend ] || echo "Place backend code in /home/autoforge/backend"
+          mkdir -p /home/project
+          [ -d /home/project/frontend ] || echo "Place frontend code in /home/project/frontend"
+          [ -d /home/project/backend ] || echo "Place backend code in /home/project/backend"
         `;
             const { stdout: cloneOut } = await ssh.exec(cloneApps);
             results.push(`   ${cloneOut.trim().split('\n').join('\n   ')}`);
@@ -1048,7 +1048,7 @@ networks:
         if (runMigrations && (method === "docker" || method === "cloudpanel-reverse-proxy")) {
             step("Running database migrations");
             await ssh.exec("sleep 5");
-            const { stdout: migrateOut } = await ssh.exec("cd /root/autoforge && docker compose exec -T backend sh -c 'alembic upgrade head 2>&1' || echo 'Migration failed (run manually)'");
+            const { stdout: migrateOut } = await ssh.exec("cd /root/project && docker compose exec -T backend sh -c 'alembic upgrade head 2>&1' || echo 'Migration failed (run manually)'");
             results.push(`   ${migrateOut.trim().split('\n').join('\n   ')}`);
         }
         // ── Phase 7: Verify ──
@@ -1102,7 +1102,7 @@ server.tool("server_firewall_allow_port", "Allow a port through the firewall (UF
     return { content: [{ type: "text", text: `✅ Port ${port}/${protocol} opened\n${stdout.trim()}` }] };
 });
 server.tool("server_dns_check", "Check DNS resolution for a domain and verify it points to this server.", {
-    domain: z.string().describe("Domain to check (e.g. autoaveriq.ca)"),
+    domain: z.string().describe("Domain to check (e.g. example.com)"),
 }, async ({ domain }) => {
     const results = [];
     results.push(`🔍 DNS check for ${domain}\n`);

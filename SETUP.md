@@ -37,8 +37,8 @@
 `server_dns_check` — verify DNS points to your server
 
 ### Deploy (1)
-`deploy_autoforge` — method: docker|cloudpanel-reverse-proxy|cloudpanel-nodejs
-   Deploys autoaveriq.ca + api.dealers.autoaveriq.ca with:
+`deploy_project` — method: docker|cloudpanel-reverse-proxy|cloudpanel-nodejs
+   Deploys a full-stack project with:
    - Auto-installs Docker if needed
    - Pre-deploy backup
    - Optional Let's Encrypt SSL
@@ -61,8 +61,8 @@ Already configured in OpenCode at `~/.config/opencode/opencode.jsonc`.
 
 - "Check what's installed: `server_software_status`"
 - "Install Docker with `dryRun=true` first to see what would happen"
-- "Deploy AutoForge with method=cloudpanel-reverse-proxy"
-- "Check if my DNS points here: `server_dns_check domain=autoaveriq.ca`"
+- "Deploy project with method=cloudpanel-reverse-proxy"
+- "Check if my DNS points here: `server_dns_check domain=example.com`"
 - "Open port 8000 for the backend: `server_firewall_allow_port port=8000`"
-- "List sites and install SSL for autoaveriq.ca"
+- "List sites and install SSL for example.com"
 - "Install Node.js 22 with method=nvm"
