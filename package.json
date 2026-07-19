@@ -1,0 +1,64 @@
+{
+  "name": "cloudpanel-mcp",
+  "version": "2.0.0",
+  "description": "MCP server for CloudPanel — manage sites, databases, SSL, Docker, and deploy apps via AI. Works with Claude, Cursor, OpenCode, Gemini CLI, Kiro, and any MCP client.",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "cloudpanel-mcp": "./build/cli.js"
+  },
+  "files": [
+    "build/",
+    "README.md",
+    "LICENSE",
+    "SETUP.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "install": "node build/cli.js install",
+    "dev": "tsx watch src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cloudpanel",
+    "hosting",
+    "vps",
+    "server-management",
+    "docker",
+    "deployment",
+    "claude",
+    "cursor",
+    "opencode",
+    "gemini",
+    "kiro",
+    "windsurf",
+    "ai",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jishh/cloudpanel-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/jishh/cloudpanel-mcp/issues"
+  },
+  "homepage": "https://github.com/jishh/cloudpanel-mcp#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "ssh2": "^1.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/ssh2": "^1.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
