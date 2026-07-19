@@ -105,14 +105,20 @@ Scans your machine and configures every AI tool it finds.
 
 ### Supported platforms
 
-- **OpenCode** — `~/.config/opencode/opencode.jsonc`
-- **Claude Desktop** — `claude_desktop_config.json`
-- **Cursor** — `~/.cursor/mcp.json`
-- **Windsurf** — `~/.codeium/windsurf/mcp_config.json`
-- **Cline** — `~/.config/cline/mcp_settings.json`
-- **Gemini CLI** — `~/.config/gemini/config.json`
-- **Kiro** — `~/.config/kiro/config.json`
-- **Continue (VS Code)** — `~/.continue/config.json`
+| Tool | Config Path | Scope |
+|---|---|---|
+| **OpenCode** | `~/.config/opencode/opencode.jsonc` | global |
+| **Claude Desktop** | `claude_desktop_config.json` | global |
+| **Claude Code** | `~/.claude/settings.json` | global |
+| **Claude Code (local)** | `.claude/settings.local.json` | local |
+| **Cursor** | `~/.cursor/mcp.json` | global |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` | global |
+| **Cline** | `~/.config/cline/mcp_settings.json` | global |
+| **Gemini CLI** | `~/.config/gemini/config.json` | global |
+| **Kiro** | `~/.config/kiro/config.json` | global |
+| **Continue (VS Code)** | `~/.continue/config.json` | global |
+| **VS Code MCP** | `.vscode/mcp.json` | local |
+| **Codex CLI** | `~/.codex/config.json` | global |
 
 ## Environment Variables
 

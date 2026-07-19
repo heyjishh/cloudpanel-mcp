@@ -232,6 +232,100 @@ const PLATFORMS = [
         mergeKey: "mcpServers",
         isNested: false,
     },
+    {
+        name: "Claude Code (global)",
+        detect: () => fs.existsSync(path.join(os.homedir(), ".claude", "settings.json")),
+        configPath: () => path.join(os.homedir(), ".claude", "settings.json"),
+        readConfig: () => {
+            const p = path.join(os.homedir(), ".claude", "settings.json");
+            if (!fs.existsSync(p))
+                return {};
+            try {
+                return JSON.parse(fs.readFileSync(p, "utf-8"));
+            }
+            catch {
+                return {};
+            }
+        },
+        writeConfig: (cfg) => {
+            const p = path.join(os.homedir(), ".claude", "settings.json");
+            fs.mkdirSync(path.dirname(p), { recursive: true });
+            fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+        },
+        mergeKey: "mcpServers",
+        isNested: false,
+    },
+    {
+        name: "Claude Code (local)",
+        detect: () => fs.existsSync(path.join(process.cwd(), ".claude", "settings.local.json")),
+        configPath: () => path.join(process.cwd(), ".claude", "settings.local.json"),
+        readConfig: () => {
+            const p = path.join(process.cwd(), ".claude", "settings.local.json");
+            if (!fs.existsSync(p))
+                return {};
+            try {
+                return JSON.parse(fs.readFileSync(p, "utf-8"));
+            }
+            catch {
+                return {};
+            }
+        },
+        writeConfig: (cfg) => {
+            const p = path.join(process.cwd(), ".claude", "settings.local.json");
+            fs.mkdirSync(path.dirname(p), { recursive: true });
+            fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+        },
+        mergeKey: "mcpServers",
+        isNested: false,
+    },
+    {
+        name: "VS Code MCP",
+        detect: () => fs.existsSync(path.join(process.cwd(), ".vscode", "mcp.json")),
+        configPath: () => path.join(process.cwd(), ".vscode", "mcp.json"),
+        readConfig: () => {
+            const p = path.join(process.cwd(), ".vscode", "mcp.json");
+            if (!fs.existsSync(p))
+                return {};
+            try {
+                return JSON.parse(fs.readFileSync(p, "utf-8"));
+            }
+            catch {
+                return {};
+            }
+        },
+        writeConfig: (cfg) => {
+            const p = path.join(process.cwd(), ".vscode", "mcp.json");
+            fs.mkdirSync(path.dirname(p), { recursive: true });
+            fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+        },
+        mergeKey: "mcpServers",
+        isNested: false,
+    },
+    {
+        name: "Codex CLI",
+        detect: () => [path.join(os.homedir(), ".codex", "config.json"), path.join(process.cwd(), ".codex", "config.json")].some(p => fs.existsSync(p)),
+        configPath: () => {
+            const local = path.join(process.cwd(), ".codex", "config.json");
+            return fs.existsSync(local) ? local : path.join(os.homedir(), ".codex", "config.json");
+        },
+        readConfig: () => {
+            for (const p of [path.join(process.cwd(), ".codex", "config.json"), path.join(os.homedir(), ".codex", "config.json")]) {
+                if (fs.existsSync(p))
+                    try {
+                        return JSON.parse(fs.readFileSync(p, "utf-8"));
+                    }
+                    catch { }
+            }
+            return {};
+        },
+        writeConfig: (cfg) => {
+            const p = path.join(os.homedir(), ".codex", "config.json");
+            fs.mkdirSync(path.dirname(p), { recursive: true });
+            fs.writeFileSync(p, JSON.stringify(cfg, null, 2) + "\n", "utf-8");
+        },
+        mergeKey: "mcpServers",
+        isNested: false,
+    },
 ];
 function cmdInstall(args) {
     const onlyPlatforms = args.filter(a => a.startsWith("--")).map(a => a.replace("--", "").toLowerCase());
@@ -315,6 +409,7 @@ ENV VARIABLES
 PLATFORMS
   OpenCode · Claude Desktop · Cursor · Windsurf
   Cline · Gemini CLI · Kiro · Continue (VS Code)
+  Claude Code · VS Code MCP · Codex CLI
 
 50 TOOLS
   cloudpanel_*  (26)  Sites · SSL · Databases · System · Users · Backups
