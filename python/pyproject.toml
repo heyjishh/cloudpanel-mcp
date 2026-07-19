@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloudpanel-mcp"
-version = "2.0.0"
+version = "2.1.0"
 description = "Python wrapper for CloudPanel MCP server — manage sites, databases, SSL, Docker, and deploy apps via AI"
 authors = [{ name = "heyjishh" }]
 license = "MIT"
